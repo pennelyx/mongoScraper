@@ -17,7 +17,10 @@ app.use(bodyParser.urlencoded({
 
 app.use(express.static("public"));
 
-mongoose.connect("mongodb://localhost/scrapedData");
+//mongoose.connect("mongodb://localhost/scrapedData");
+
+mongoose.connect("mongodb://heroku_4hfbt019:90ssl7v5hi3gvpgpeoqnobl7n@ds129374.mlab.com:29374/heroku_4hfbt019");
+
 var db = mongoose.connection;
 
 db.on("error", function(error) {
