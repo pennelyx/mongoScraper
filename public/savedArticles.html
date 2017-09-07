@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>NBA Today</title>
+
+	<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+
+
+  <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+
+  <link rel="stylesheet" type="text/css" href="./assets/css/reset.css">
+  <link rel="stylesheet" type="text/css" href="./assets/css/style.css">
+  <script src= "./assets/js/app.js"> </script>
+
+</head>
+<body>
+<div class = "wrapper">
+
+	<h1>NBA Today</h1>
+	<ul class="nav nav-pills">
+	  <li role="presentation"><a href="./index.html">All Articles</a></li>
+	  <li role="presentation" class="active"><a href="./savedArticles.html">Saved Articles</a></li>
+	</ul>
+
+	<div class="image">
+		<img src="http://3.bp.blogspot.com/-t8jCHOpRRbo/UwAZ7NAlOGI/AAAAAAAABQw/8h9dKAhPipI/s1600/NBA+Today.png" alt="background pic" width=100%>
+	</div>
+
+
+	<div class="panel panel-info allArticleDisplay">
+	  <div class="panel-heading">
+	    <h2>Saved articles</h2>
+	    <div class="btn-group" role="group" aria-label="...">
+  
+		</div>
+	  </div>
+	  <div class="panel-body">
+	  	<table class="table table-striped">
+	  	    <tbody id="displayArticles">
+	  	    	<!-- <p class="mainPresetTextStyle"> Please Load Articles!</p> -->
+           	</tbody>
+       	</table>  	
+	  </div>
+	</div>
+
+
+ <!-- Modals -->
+	<div class="modal fade" id="loadArticleModal" tabindex="-1" role="dialog" aria-labelledby="loadArticleModalLabel" aria-hidden="true">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-body">
+	        <p class="modalTextStyle"> Articles are loaded </p>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+
+</div>
+
+<script type="text/javascript">
+
+$.getJSON("/savedarticles", function(data) {
+	var articleId;
+  	var articleTitle;
+  	var articleLink;
+  	var noteBtn;
+  	var unsaveBtn;
+
+    for (var i = 0; i < data.length; i++) {
+    	articleId = data[i]._id;
+    	articleTitle = data[i].title;
+    	articleLink = data[i].link;
+
+    	var articleTitleTd = $("<tr>");
+    	var unsaveBtn = $("<button>Unsave</button>");
+    	var noteBtn = $("<button>Note</button>");
+    	articleTitleTd.addClass("articleTitleStyle");
+    	unsaveBtn.addClass("btn btn-default btn-info unsaveBtnStyle");
+    	unsaveBtn.attr('id', articleId);
+    	noteBtn.addClass("btn btn-default btn-info noteBtnStyle");
+    	noteBtn.attr('id', articleId);
+
+    	articleTitleTd.html(articleTitle);
+    	articleTitleTd.append(unsaveBtn);
+    	articleTitleTd.append(noteBtn);
+
+    	$("#displayArticles").append(articleTitleTd);
+	}
+});
+
+
+$(document).on("click", ".unsaveBtnStyle", function() {
+	var thisId = $(this).attr("id");
+
+	$.ajax({
+		method: "GET",
+	    url: "/articles/unsave/"+thisId
+	}).done(function(data) {
+		$("#displayArticles").empty();
+		$.getJSON("/savedarticles", function(data) {
+			var articleId;
+		  	var articleTitle;
+		  	var articleLink;
+		  	var noteBtn;
+		  	var unsaveBtn;
+		    for (var i = 0; i < data.length; i++) {
+		    	articleId = data[i]._id;
+		    	articleTitle = data[i].title;
+		    	articleLink = data[i].link;
+
+		    	var articleTitleTd = $("<tr>");
+		    	var unsaveBtn = $("<button>Unsave</button>");
+		    	var noteBtn = $("<button>Note</button>");
+		    	articleTitleTd.addClass("articleTitleStyle");
+		    	unsaveBtn.addClass("btn btn-default btn-info unsaveBtnStyle");
+		    	unsaveBtn.attr('id', articleId);
+		    	noteBtn.addClass("btn btn-default btn-info noteBtnStyle");
+		    	noteBtn.attr('id', articleId);
+
+		    	articleTitleTd.html(articleTitle);
+		    	articleTitleTd.append(unsaveBtn);
+		    	articleTitleTd.append(noteBtn);
+
+		    	$("#displayArticles").append(articleTitleTd);
+			}
+		});
+	});
+});
+
+
+
+// $(document).on("click", "#loadArticle", function() {
+//   $("p.mainPresetTextStyle").remove();
+
+//   $.ajax({
+//     method: "GET",
+//     url: "/scrape"
+//   }).done(function(data) {
+
+//   	var articleId;
+//   	var articleTitle;
+//   	var articleLink;
+//   	var saveBtn;
+
+//     for (var i = 0; i < data.length; i++) {
+//     	articleId = data[i]._id;
+//     	articleTitle = data[i].title;
+//     	articleLink = data[i].link;
+
+//     	var articleTitleTd = $("<tr>");
+//     	var saveBtn = $("<button>Save</button>");
+//     	articleTitleTd.addClass("articleTitleStyle");
+//     	saveBtn.addClass("btn btn-default btn-info saveBtnStyle");
+
+//     	articleTitleTd.html(articleTitle);
+//     	articleTitleTd.append(saveBtn);
+
+
+//     	 $("#displayArticles").append(articleTitleTd);
+
+//   	}
+//   });
+
+// });
+
+
+
+// $(document).on("click", "#clearArticle", function() {
+// 	$.ajax({
+// 		method: "GET",
+// 	    url: "/cleararticles"
+// 	}).done(function(data) {
+// 		$("#displayArticles").empty();
+// 		// $(".articleTitleStyle").remove();
+// 		// $(".saveBtnStyle").remove();
+// 		var mainPresetText = $("<p> Please Load Articles!</p>");
+// 		mainPresetText.addClass("mainPresetTextStyle");
+// 		$("#displayArticles").append(mainPresetText);
+// 	});
+// });
+
+
+</script>
+</body>
+</html>
