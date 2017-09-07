@@ -89,7 +89,7 @@
 
 <script type="text/javascript">
 
-$.getJSON("/articles", function(data) {
+var loadAllArticles = function (data){
 	var articleId;
   	var articleTitle;
   	var articleLink;
@@ -105,13 +105,18 @@ $.getJSON("/articles", function(data) {
     	articleTitleTd.addClass("articleTitleStyle");
     	saveBtn.addClass("btn btn-default btn-info saveBtnStyle");
     	saveBtn.attr('id', articleId);
+    	console.log(articleLink);
 
-    	articleTitleTd.html(articleTitle);
+    	articleTitleTd.html("<a href=" + articleLink + ">" + articleTitle + "</a>");
     	articleTitleTd.append(saveBtn);
 
-
     	$("#displayArticles").append(articleTitleTd);
-	}
+	};
+};
+
+
+$.getJSON("/articles", function(data) {
+	loadAllArticles(data);
 });
 
 
@@ -124,32 +129,10 @@ $(document).on("click", "#loadArticle", function() {
   }).done(function(data) {
  
 	  	$.getJSON("/articles", function(data) {
-			var articleId;
-		  	var articleTitle;
-		  	var articleLink;
-		  	var saveBtn;
-
-		    for (var i = 0; i < data.length; i++) {
-		    	articleId = data[i]._id;
-		    	articleTitle = data[i].title;
-		    	articleLink = data[i].link;
-
-		    	var articleTitleTd = $("<tr>");
-		    	var saveBtn = $("<button>Save</button>");
-		    	articleTitleTd.addClass("articleTitleStyle");
-		    	saveBtn.addClass("btn btn-default btn-info saveBtnStyle");
-		    	saveBtn.attr('id', articleId);
-
-		    	articleTitleTd.html(articleTitle);
-		    	articleTitleTd.append(saveBtn);
-
-
-		    	$("#displayArticles").append(articleTitleTd);
-			}
+			loadAllArticles(data);
 		});
 	});
 });
-
 
 
 $(document).on("click", "#clearArticle", function() {
