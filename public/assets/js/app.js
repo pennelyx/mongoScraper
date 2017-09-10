@@ -32,6 +32,7 @@ $.getJSON("/articles", function(data) {
 
 $(document).on("click", "#loadArticle", function() {
   $("p.mainPresetTextStyle").remove();
+  $("#displayArticles").empty();
 
   $.ajax({
     method: "GET",

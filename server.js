@@ -40,32 +40,51 @@ app.get("/scrape", function(req, res) {
 	request("http://www.nba.com/", function(error, reponse, html) {
 		var $ = cheerio.load(html);
 		var result = {};
-
-		$(".content_promo--headline").each(function(i, element) {
-			var title = $(this).children().text();
-			var link = $(this).parent().attr("href");
-
-			//some links are not complete. Need "nba.com" in front
-			if(link[0] === "/") {
-				link = "http://www.nba.com".concat(link);
-			};
-			//some links end with "/", which cause issues when link to article title
-			if(link[link.length-1] === "/") {
-				link = link.substring(0, link.length - 1);
+		var articleExist = 0;
+		Article.find({}, function(error, savedDoc) {
+			if (error) {
+				console.log(error);
 			}
-			result.title = title;
-			result.link = link;
-			result.saved = false;
+			else {
+				
+				$(".content_promo--headline").each(function(i, element) {
+					var title = $(this).children().text();
+					var link = $(this).parent().attr("href");
+					articleExist = 0;
 
-			var entry = new Article(result);
-			entry.save(function(err, doc) {
-				if (err) {
-					console.log(err);
-				}
-				// else {
-				// 	res.json(doc);
-				// }
-			});
+					//some links are not complete. Need "nba.com" in front
+					if(link[0] === "/") {
+						link = "http://www.nba.com".concat(link);
+					};
+					//some links end with "/", which cause issues when link to article title
+					if(link[link.length-1] === "/") {
+						link = link.substring(0, link.length - 1);
+					}
+					result.title = title;
+					result.link = link;
+					result.saved = false;
+
+					//search database to see if there is a match
+					for (var j = 0; j<savedDoc.length; j++) {
+						if(savedDoc[j].title === title) {
+							articleExist = 1; 
+							break;
+						}
+					}
+
+					if (articleExist === 0) {
+						var entry = new Article(result);
+						entry.save(function(err, doc) {
+							if (err) {
+								console.log(err);
+							}
+							// else {
+							// 	res.json(doc);
+							// }
+						});
+					}
+				});
+			}
 		});
 
 		Article.find({}, function(error, doc) {
